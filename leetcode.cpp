@@ -2,6 +2,8 @@
 #include <algorithm>
 #include <iterator>
 #include <assert.h>
+#include <vector>
+#include <limits>
 
 using namespace std;
 
@@ -53,7 +55,7 @@ int test_remove(int* a, size_t len){
 }
 
 
-int main(){
+int test_remove(){
 	int a[] = {1,2,2,3,4,5,6,6,6,9};
 	size_t len = sizeof(a)/sizeof(int);
 	test_remove(a, len);
@@ -66,9 +68,57 @@ int main(){
 	len = sizeof(c)/sizeof(int);
 	test_remove(c, len);
 
-	int d[] = {}
-	len = sizeof(c)/sizeof(int);
-	test_remove(c, len);
+	int d[] = {};
+	len = sizeof(d)/sizeof(int);
+	test_remove(d, len);
 
 	return 0;
+}
+
+int min(int a, int b){
+	return a < b ? a : b;
+}
+
+//Triangle
+int triangle(const vector<vector<int> > &tri){
+	vector<int> v(tri[tri.size() - 1]);
+	for (int i = tri.size() - 2; i >= 0; --i){
+		size_t len = tri[i].size();
+		for (int j = 0; j < len; ++j){
+			v[j] = min(v[j], v[j+1]) + tri[i][j];
+		}
+	}
+	return v[0];
+}
+
+int test_triangle(){
+	vector<vector<int> > v(4, vector<int>(4, 0));
+	v[0][0] = 2;
+	v[1][0] = 3; v[1][1] = 4;
+	v[2][0] = 6; v[2][1] = 5; v[2][2] = 7;
+	v[3][0] = 4; v[3][1] = 1; v[3][2] = 8; v[3][3] = 3;
+
+	cout<<triangle(v)<<endl;
+}
+
+int max(int a, int b){
+	return a > b ? a : b;
+}
+
+int max_sub_array(int *arr, size_t len){
+	int result = numeric_limits<int>::min(), balance = 0;
+	for (int i = 0; i < len; ++i){
+		balance = max(balance + arr[i], arr[i]);
+		result = max(result, balance);
+	}
+	return result;
+}
+
+int test_max_sub_arr(){
+	int a[] = {-2, 1, -3, 4, -1, 2, 1, -5, 4};
+	cout<<max_sub_array(a, (sizeof a)/sizeof(int))<<endl;
+}
+
+int main(){
+	test_max_sub_arr();
 }
