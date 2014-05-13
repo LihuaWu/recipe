@@ -203,7 +203,26 @@ int search(int* arr, size_t n, int v){
 	return -1;
 }
 
+int find_kth_elem(int* A, size_t m, int* B, size_t n, size_t k){
+	if (m > n) return find_kth_elem(B, n, A, m, k);
+	if (m == 0) return B[k - 1];
+	if (k == 1) return min(A[0], B[0]);
+
+	size_t ma = min((k + 1)/2, m);
+	size_t mb = k - ma;
+
+	if (A[ma - 1] < B[mb - 1]){
+		return find_kth_elem(A + ma, m - ma, B, n, k - ma);
+	} else if (A[ma - 1] > B[mb - 1]){
+		return find_kth_elem(A, m, B + mb, n - mb, k - mb);
+	} else {
+		return A[ma - 1];
+	}
+}
+
+
 int main(){
-	test_remove_dup_elem_v2();
+//	test_remove_dup_elem_v2();
 //	test_max_sub_arr();
+	return 0;
 }
