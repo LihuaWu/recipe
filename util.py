@@ -13,10 +13,9 @@ def guess_encoding(data):
 	"""
 	#encodings = aliases.keys()
 	encodings = [
-		'gb2312', 'gbk', 'gb18030','hz', #cn
+		'gbk'
 		'big5', #tw
-		'big5hkscs', #hk
-		'latin-1'  #west euro
+		'utf8'
 		
 	]
 

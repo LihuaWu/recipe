@@ -15,6 +15,9 @@ class UtilTest(unittest.TestCase):
 		f, enc, _ = util.guess_encoding(s)
 		self.assertTrue(f, 'True')
 		self.assertTrue(enc, 'gb2312')
+		s = s.decode('gbk').encode('utf-8')
+		f, enc, _ = util.guess_encoding(s)
+		print f, enc
 		pass
 
 if __name__ == '__main__':

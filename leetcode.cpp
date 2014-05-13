@@ -105,6 +105,7 @@ int max(int a, int b){
 	return a > b ? a : b;
 }
 
+//Max SubArray
 int max_sub_array(int *arr, size_t len){
 	int result = numeric_limits<int>::min(), balance = 0;
 	for (int i = 0; i < len; ++i){
@@ -119,6 +120,90 @@ int test_max_sub_arr(){
 	cout<<max_sub_array(a, (sizeof a)/sizeof(int))<<endl;
 }
 
+
+//MinimumCut
+//f[i] = min(f(j+1) + 1) s[i,j] is palidram
+//palidram detect: p[i][j] = str[i] == str[j] && p[i+1][j-1]
+size_t minimum_cut(const string& s){
+	size_t len = s.size();
+	vector<int> f(len);
+	for (int i = 0; i < len; ++i)
+		f[i] = len - 1 - i;
+
+	vector<vector<bool> > p(len, vector<bool>(len, false));
+
+	for(int i = len - 1; i >= 0; --i){
+		for (int j = i; j < len; ++j){
+			if (s[i] == s[j] && (j - i < 2 || p[i+1][j-1])){
+				p[i][j] = true;
+				f[i] = min(f[j+1] + 1, f[i]);
+			}
+		}
+	}
+	return f[0];
+}
+
+
+size_t remove_dup_elem_v2(int* arr, size_t n){
+	assert(arr != NULL);
+	if (n <= 2) return n;
+	size_t tail = 1;
+	for (int i = 2; i < n; ++i){
+		if (arr[tail] == arr[tail-1] && arr[i] != arr[tail]){
+			arr[++tail] = arr[i];
+		} else if (arr[tail] != arr[tail-1]){
+			arr[++tail] = arr[i];
+		} 
+	}
+	return tail + 1;
+
+}
+
+size_t remove_dup_elem_v2_ex(int* arr, size_t n){
+	if (n <= 2) return n;
+	size_t tail = 1;
+	for (int i = 2; i < n; ++i){
+		if (arr[i] != arr[tail - 1])
+			arr[++tail] = arr[i];
+	}
+	return tail + 1;
+}
+
+int test_remove_dup_elem_v2(){
+	int a[] = {1,1,1,2,2,3};
+	cout<<remove_dup_elem_v2(a, 6)<<endl;
+	for(int i = 0; i < 6; ++i){
+		cout<<a[i]<<"\t";
+	}
+	cout<<endl;
+
+}
+
+int search(int* arr, size_t n, int v){
+	size_t start = 0;
+	size_t end = n;
+	while (start < end){
+		const size_t mid = start + (end - start) / 2;
+		if (arr[start] < arr[mid]){
+			if (arr[start] <= v && v < arr[mid])
+				end = mid;
+			else {
+				start = mid + 1;
+			}
+		} else if arr[start] > arr[mid]{
+			if (arr[mid] < v && v <= arr[end - 1]){
+				start = mid + 1;
+			}else {
+				end = mid; 
+			}
+		} else {
+			start++;
+		}
+	}
+	return -1;
+}
+
 int main(){
-	test_max_sub_arr();
+	test_remove_dup_elem_v2();
+//	test_max_sub_arr();
 }
