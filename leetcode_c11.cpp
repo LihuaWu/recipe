@@ -100,11 +100,42 @@ three_sum(vector<int>& v){
 	return result;
 }
 
+vector<vector<int> > three_sum_v2(vector<int>& v){
+	vector<vector<int> > result;
+	vector<int> tmp;
+	if (v.size() < 3)
+		return result;
+
+	sort(v.begin(), v.end());
+
+	for (auto i = v.begin(); i < prev(v.end(), 2); ++i){
+		auto start = next(i);
+		auto end = prev(v.end());
+		int target = -*i;
+		while (start < end){
+			int cur = *start + *end;
+			if (cur == target){
+				tmp.clear();
+				tmp.push_back(*i);
+				tmp.push_back(*start);
+				tmp.push_back(*end);
+				result.push_back(tmp);
+				++start;
+				--end;
+			} else if (cur < target){ ++start; }
+			else { --end; }
+		}
+	}
+	sort(result.begin(), result.end());
+	result.erase(unique(result.begin(), result.end()), result.end());
+	return result;
+}
+
 int test_three_sum(){
 	int a[] = {-1, 0, 1, 2, -1, -4};
 	size_t len = sizeof(a)/sizeof(int);
 	vector<int> v(a, a + len);
-	vector<vector<int> > m = three_sum(v);
+	vector<vector<int> > m = three_sum_v2(v);
 	for (auto i : m){
 		for (auto j : i){
 			cout<<j<<"\t";
@@ -156,11 +187,17 @@ int test_three_sum_closest(){
 	return 0;
 }
 
+vector<vector<int> > four_sum(vector<int>& v){
+	vector<vector<int> > result;
+
+	return result;
+}
+
 
 int main(){
 
-//	test_three_sum();
-	test_three_sum_closest();
+	test_three_sum();
+//	test_three_sum_closest();
 
 //	test_two_sum();
 
