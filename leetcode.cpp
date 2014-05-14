@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <vector>
 #include <limits>
+#include <set>
 
 using namespace std;
 
@@ -190,7 +191,7 @@ int search(int* arr, size_t n, int v){
 			else {
 				start = mid + 1;
 			}
-		} else if arr[start] > arr[mid]{
+		} else if (arr[start] > arr[mid] ){
 			if (arr[mid] < v && v <= arr[end - 1]){
 				start = mid + 1;
 			}else {
