@@ -7,6 +7,7 @@
 #include <limits>
 #include <stdlib.h>
 #include <assert.h>
+#include <utility>
 
 using namespace std;
 
@@ -187,18 +188,62 @@ int test_three_sum_closest(){
 	return 0;
 }
 
-vector<vector<int> > four_sum(vector<int>& v){
+//four sum
+vector<vector<int> > four_sum(vector<int>& v, int target){
 	vector<vector<int> > result;
+	if (v.size() < 4) return result;
+	unordered_map<int, vector<pair<int, int> > > cached;
 
+	sort(v.begin(), v.end());
+
+	for (int i = 0; i < v.size(); ++i){
+		for (int j = i + 1; j < v.size(); ++j){
+			cached[v[i] + v[j]].push_back(make_pair(i, j));
+		}
+	}
+
+	for (size_t c = 0; c < v.size(); ++c){
+		for (size_t d = c + 1; d < v.size(); ++d){
+			int  remain =  target - v[c] - v[d];
+			if (cached.find(remain) == cached.end()) continue;
+		
+			auto vec = cached[remain];
+			for (auto i : vec) {
+				if (c <= i.second) continue;
+
+				vector<int> cur_rec({v[i.first], v[i.second], v[c], v[d]});
+				result.push_back(cur_rec);
+			}
+		}
+	}
+	sort(result.begin(), result.end());
+	result.erase(unique(result.begin(), result.end()), result.end());
 	return result;
+}
+
+int test_four_sum(){
+	int target = 0;
+	int a[] = {1, 0, -1, 0, -2, 2};
+	size_t len = sizeof(a)/sizeof(int);
+	vector<int> v(a, a + len);
+	auto m = four_sum(v, target);
+	for (auto i : m){
+		for (auto j : i){
+			cout<<j<<"\t";
+		}
+		cout<<endl;
+	}
+
+	return 0;
 }
 
 
 int main(){
 
-	test_three_sum();
-//	test_three_sum_closest();
+	test_four_sum();
 
+//	test_three_sum();
+//	test_three_sum_closest();
 //	test_two_sum();
 
 	return 0;
