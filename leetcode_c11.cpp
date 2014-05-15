@@ -276,24 +276,42 @@ int test_remove_elem(){
 }
 
 int next_permutation(vector<int>& v){
-	auto lhs = prev(v.end);
-	for (auto i = prev(v.end(), 2); i >= v.begin(); --i){
-		if (*i < *(i + 1)){
-			lhs = i;
+	if (v.size() == 1) return 0;
+	auto lhs = prev(v.end());
+
+	vector<int>::iterator i;
+	for (i = prev(v.end()); i > v.begin(); --i){
+		if (*(i-1) < *i){
+			lhs = i - 1;
 			break;
 		}
 	}
+
+	if (i == v.begin()) {
+		sort(v.begin(), v.end());
+		return 0;
+	}
+
 	auto rhs = lhs + 1;
-	for (auto i = rhs; i < v.end(); ++i){
-		if (*i < *cur) {
+	for (i = rhs; i < v.end(); ++i){
+		if (*i <= *lhs) {
 			rhs = i - 1;
 			break;
 		}
 	}
+	if (i == v.end())
+		rhs = prev(v.end());
+
 	iter_swap(lhs, rhs);
 	sort(lhs + 1, v.end());
+
 	return 0;
 }
+
+int next_permutation_v2(vector<int>& v){
+	return 0;
+}
+
 
 int printVec(const vector<int>& v){
 	copy(v.begin(), v.end(), ostream_iterator<int>(cout, "\t"));
@@ -302,7 +320,7 @@ int printVec(const vector<int>& v){
 }
 
 int test_next_permutation(){
-	vector<int> v({1,2,3,4,5,6,7});
+	vector<int> v({1, 1});
 	printVec(v);
 	next_permutation(v);
 	printVec(v);
@@ -310,6 +328,7 @@ int test_next_permutation(){
 }
 
 int main(){
+	test_next_permutation();
 //	test_remove_elem();
 
 //	test_four_sum();
