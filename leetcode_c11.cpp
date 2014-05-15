@@ -237,14 +237,85 @@ int test_four_sum(){
 	return 0;
 }
 
+size_t remove_elem(int *arr, size_t n, int elem){
+	assert(arr != NULL);
+	assert(n >= 0);
+	size_t step = 0;
+	for (size_t i = 0; i < n; ++i){
+		if (arr[i] == elem){
+			++step;
+		}else {
+			arr[i - step] = arr[i];
+		}	
+	}
+	return n - step;
+}
+
+size_t remove_elem_v2(int *arr, size_t n, int elem){
+	assert(arr != NULL);
+	assert(n >= 0);
+	size_t tail = 0;
+	for (int i = 0; i < n; ++i){
+		if (arr[i] != elem){
+			arr[tail++] = arr[i];
+		}
+	}
+	return tail;
+}
+
+int test_remove_elem(){
+	int a[] = {4,2,2,4,2,5,2,4,2,2,4,2};
+	int elem = 2;
+	size_t len = sizeof(a)/sizeof(int);
+	copy(a, a + len, ostream_iterator<int>(cout, "\t"));
+	cout<<endl;
+	cout<<remove_elem(a, len, elem)<<endl;
+	copy(a, a + len, ostream_iterator<int>(cout, "\t"));
+	cout<<endl;
+	return 0;
+}
+
+int next_permutation(vector<int>& v){
+	auto lhs = prev(v.end);
+	for (auto i = prev(v.end(), 2); i >= v.begin(); --i){
+		if (*i < *(i + 1)){
+			lhs = i;
+			break;
+		}
+	}
+	auto rhs = lhs + 1;
+	for (auto i = rhs; i < v.end(); ++i){
+		if (*i < *cur) {
+			rhs = i - 1;
+			break;
+		}
+	}
+	iter_swap(lhs, rhs);
+	sort(lhs + 1, v.end());
+	return 0;
+}
+
+int printVec(const vector<int>& v){
+	copy(v.begin(), v.end(), ostream_iterator<int>(cout, "\t"));
+	cout<<endl;
+	return 0;
+}
+
+int test_next_permutation(){
+	vector<int> v({1,2,3,4,5,6,7});
+	printVec(v);
+	next_permutation(v);
+	printVec(v);
+	return 0;
+}
 
 int main(){
+//	test_remove_elem();
 
-	test_four_sum();
+//	test_four_sum();
 
 //	test_three_sum();
 //	test_three_sum_closest();
 //	test_two_sum();
-
 	return 0;
 }
