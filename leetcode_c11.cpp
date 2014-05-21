@@ -327,8 +327,108 @@ int test_next_permutation(){
 	return 0;
 }
 
+int rotate_matrix(vector<int>& v, size_t row){
+	for (int i = 0; i < row; ++i){
+		for (int j = 0; j < row; ++j){
+		}
+	}
+
+	
+	return 0;
+}
+
+size_t candy(vector<int>& rating){
+	size_t n = rating.size();
+
+	//this special cases should be taken care of 
+	//subject to the following codes
+	if (n == 0) return 0;
+	else if (n == 1) return 1;
+
+	vector<int> v(n, 0);
+
+	for (size_t i = 1; i < n; ++i){
+		if (rating[i] > rating[i - 1]){ // compare to left side
+			v[i] = max(v[i], v[i - 1] + 1);
+		}
+	}
+
+	//size_t can only increase, not decrease
+	for (int i = n - 2; i >= 0; --i){ // compare to right side
+		cout<<i<<endl;
+		if (rating[i] > rating[i + 1]){
+			v[i] = max(v[i], v[i + 1] + 1);
+		}
+	}
+
+	return accumulate(v.begin(), v.end(), n);
+}
+
+int test_candy(){
+	//int a[] = {};
+	//int a[] = {1};
+	int a[] = {2, 2};
+	size_t len = sizeof(a)/sizeof(int);
+	vector<int> v(a, a + len);
+	cout<<candy(v)<<endl;
+	return 0;
+}
+
+int single_num(const vector<int>& v){
+	return accumulate(v.begin(), v.end(), 0, bit_xor<int>());
+}
+
+
+struct ListNode {
+	int val;
+	ListNode *next;
+	ListNode(int x): val(x), next(NULL) {}
+};
+
+ListNode* add_two(ListNode* lhs, ListNode* rhs){
+	int carry = 0;
+	ListNode tmp(-1);
+	ListNode* cur = &tmp;
+
+	for (ListNode *lp = lhs, *rp = rhs; 
+			lp != NULL || rp != NULL; 
+			lp = lp == NULL ? NULL : lp->next,
+		   	rp = rp == NULL ? NULL : rp->next, 
+			cur = cur->next){
+		const int a = (lp == NULL ? 0 : lp->val);
+		const int b = (rp == NULL ? 0 : rp->val);
+		const int value = a + b + carry;
+
+		cur->next = new ListNode(value % 10);
+		carry = value / 10;
+	}
+	if (carry > 0)
+		cur->next = new ListNode(carry);
+	return tmp.next;
+}
+
+ListNode* reverseBetween(ListNode* l, size_t m, size_t n){
+	for(size_t i = 0; i < m - 1; ++i){
+	}
+
+	return l;
+}
+
+
 int main(){
-	test_next_permutation();
+	ListNode * v = new ListNode(1);
+	v->next = new ListNode(8);
+	ListNode * b = new ListNode(0);
+	ListNode* r = add_two(v, b);
+	while(r){
+		cout<<r->val<<"\t";
+		r = r->next;
+	}
+	cout<<endl;
+
+//	test_candy();
+//	cout<<(2<<5)<<endl;
+//	test_next_permutation();
 //	test_remove_elem();
 
 //	test_four_sum();
