@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <utility>
+#include <list>
+#include <string>
+#include <string.h>
 
 using namespace std;
 
@@ -414,17 +417,132 @@ ListNode* reverseBetween(ListNode* l, size_t m, size_t n){
 	return l;
 }
 
+int test_list(){
+	list<int> list1, list2;
+	for (int i = 1; i < 5; ++i){
+		list1.push_back(i);
+	}
+
+	for (int i = 1; i < 4; ++i){
+		list2.push_back(i * 100);
+	}
+
+	auto it = list1.begin();
+
+	++it;
+
+	list1.splice(it, list2);
+	copy(list1.begin(), list1.end(), ostream_iterator<int>(cout, " "));
+	cout<<endl;
+	copy(list2.begin(), list2.end(), ostream_iterator<int>(cout, " "));
+	cout<<endl;
+	list2.splice(list2.begin(), list1, it);
+	copy(list2.begin(), list2.end(), ostream_iterator<int>(cout, " "));
+	cout<<endl;
+
+	it = list1.begin();
+	advance(it, 3);
+
+	copy(list1.begin(), list1.end(), ostream_iterator<int>(cout, " "));
+	cout<<endl;
+	list1.splice(list1.begin(), list1, it, list1.end());
+	copy(list1.begin(), list1.end(), ostream_iterator<int>(cout, " "));
+	cout<<endl;
+
+	return 0;
+}
+
+string maxPalindrom(const string &s){
+	size_t n = s.size();
+	vector<vector<bool> > f(n, vector<bool>(n, false));
+	size_t start_point = 0;
+	size_t len = 1;
+	for (size_t end = 0; end < n; ++end){
+		f[end][end] = true;
+		for (int start = end - 1; start >= 0; --start){
+			if (s[start] == s[end] 
+					&&(end - start < 2 || f[start + 1][end - 1])){
+				f[start][end] = true;
+				if (end - start + 1 > len){
+					len = end - start + 1;
+					start_point = start;
+				}
+			}
+		}
+	}
+	return s.substr(start_point, len);
+}
+
+string str_pre(const string& s){
+	size_t n = s.size();
+
+	string t = "";
+
+	for (int i = 0; i < n; ++i){
+		t += "#" + s.substr(i, 1);
+	}
+	t += "#";
+	return t;
+}
+
+string maxPalidrom_v2(const string &s){
+	size_t center = 0, radius = 0; 
+	string t = str_pre(s);
+	const int n = t.size();
+	int p[n];
+	fill_n(&p[0], n, 0);
+	for (size_t i = 1; i < n - 1; ++i){
+		size_t j = 2 * center - i;
+		if (radius - i <= 0) {
+			p[i] = 0; 
+		}else if (radius - i > p[j]){
+			p[i] = p[j];
+		}else {
+			p[i] = radius - i;
+		}
+		while(i + p[i] + 1 < n && i - p[i] - 1 >= 0){
+			if(t[i + p[i] + 1] == t[i - p[i] - 1]) {
+				p[i]++;
+			}
+			else {
+				break;
+			}
+		}
+		if (radius < p[i] + i) {
+			radius = p[i] + i;
+			center = i;
+		}
+	}
+	size_t max_len = 0;
+	center = 0;
+	for (size_t i = 0; i < n; ++i){
+		if (max_len < p[i]){
+			max_len = p[i];
+			center = i;
+		}
+	}
+	cout<<(center - 1) / 2 - max_len / 2<<endl;
+	cout<<max_len<<endl;
+	return s.substr((center - 1) / 2 - max_len / 2, max_len);
+}
+
 
 int main(){
-	ListNode * v = new ListNode(1);
-	v->next = new ListNode(8);
-	ListNode * b = new ListNode(0);
-	ListNode* r = add_two(v, b);
-	while(r){
-		cout<<r->val<<"\t";
-		r = r->next;
-	}
-	cout<<endl;
+	string s("b"); 
+	cout<<maxPalidrom_v2(s)<<endl;
+
+//	string s = "a";
+//	cout<<maxPalindrom(s)<<endl;
+//	test_list();
+	//ListNode * v = new ListNode(1);
+	//v->next = new ListNode(8);
+	//ListNode * b = new ListNode(0);
+	//ListNode* r = add_two(v, b);
+	//while(r){
+	//	cout<<r->val<<"\t";
+	//	r = r->next;
+	//}
+	//cout<<endl;
 
 //	test_candy();
 //	cout<<(2<<5)<<endl;
