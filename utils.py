@@ -1,13 +1,13 @@
 #!/usr/bin/python2
 #coding:utf8
 
-import optparse
 import ConfigParser
 import urlparse
 import urllib2
 import urllib
 import zlib
 import functools
+import os.path
 
 import gevent
 import gevent.queue
@@ -16,35 +16,6 @@ import lxml
 
 import rewrite
 import log
-
-def parse_args():
-	"""Read and parse options from command line
-	Initialize logging
-	"""
-
-	usage = """usage: %prog [options]
-To crawl pages from web in terms of special URL patterns."""
-
-	parser = optparse.OptionParser(usage = usage, version = '%prog 1.0.0.0')	
-	parser.add_option('-c', dest = 'filename',
-						help = 'read config file', metavar = 'FILE')
-
-	parser.add_option('-l', '--log', dest = 'log', action = 'store_true',
-						help = 'start logging', default = False)
-
-	options, args = parser.parse_args()
-	if options.filename is None:
-		print parser.format_help()
-		parser.exit()
-	else:
-		confs = parse_config_file(options.filename)
-		if options.log:
-			log.read_config_file(confs['log']['log_config_file'])
-			log.install(confs['log']['log_name'])
-		else:
-			log.uninstall()	
-
-		return options, confs
 
 def parse_config_file(filename): 
 	"""Read configuration file and return as a dict
@@ -59,8 +30,8 @@ def parse_config_file(filename):
 	for s in config.sections():
 		conf = config.items(s,True)
 		confs[s] = dict(conf)
-
 	return confs
+
 
 def read_file(filename):
 	"""Read content from file and return a generator
@@ -82,6 +53,7 @@ def read_file(filename):
 	finally:
 		f.close()	
 
+
 def get_url_response(url, header_dict = {}, post_dict = {},
 	timeout = 0, use_gzip = False):
 	"""
@@ -97,7 +69,6 @@ def get_url_response(url, header_dict = {}, post_dict = {},
 	Return values:
 	file like object
 	"""
-
 	url = str(url)
 	#load post data
 	if len(post_dict) > 0:
@@ -126,7 +97,6 @@ def get_url_response(url, header_dict = {}, post_dict = {},
 		response = urllib2.urlopen(req, timeout = timeout)
 	else:
 		response = urllib2.urlopen(req)
-
 	return response
 
 
@@ -145,7 +115,6 @@ def get_html(url, header_dict = {}, post_dict = {},
 	Return values:
 	html string
 	"""
-
 	response = get_url_response(url, header_dict, post_dict, timeout, use_gzip)
 
 	html = response.read()
@@ -158,15 +127,19 @@ def get_html(url, header_dict = {}, post_dict = {},
 	if ("Content-Encoding" in resp_info and 
 		resp_info['Content-Encoding'] == 'gzip'):
 		html = zlib.decompress(html, 16 + zlib.MAX_WBITS) 
-
 	return html
 
-def fetch_urls(url, timeout = 0):
+
+def save_and_fetch(url, pattern, path, timeout):
 	"""
-	extract urls from the input url html page and return a generator
+	download html page in terms of url.	
+	save html with specific url pattern into file with url as file name.
+	extract urls from the html page and return a generator.
 	
 	Keyword arguments:
 	url: URL
+	pattern: compiled url regular expression pattern
+	timeout: timeout seconds to fetch html page
 	
 	Return values:
 	url generator
@@ -180,16 +153,48 @@ def fetch_urls(url, timeout = 0):
 		log.error("%s:%s" %(url, e))
 		return
 
+	if pattern.match(url):
+		filename = "%s%s" %(path, urllib.quote_plus(url))
+		log.info('url: %s match target_url. store in file:%s.'
+						%(url, filename))
+		write_file(os.path.abspath(filename), html)
+
+	for u in extract_urls(url, html):
+		yield u
+
+
+def write_file(filename, content):
+	"""Write content into file
+	Keyword arguments:
+	filename  file's name
+	content   content string to write to file
+	""" 
+	f = open(filename, 'w') 
+	f.write(content)
+	f.close()
+
+
+def extract_urls(url, html):
+	"""extract all link tags from html
+	use filter strategies to filter tags which are not url
+
+	Keyword arguments:
+	url: URL string
+	html: html page content
+
+	Return values:
+	url generator 
+	"""
+	#search links
 	d = pyquery.PyQuery(html)
+
+	url_filter = ['javascript:;', '#jump']
 	for i in d.find('a'):
-		m = i.values()
-		url_filter = ['javascript:;', '#jump']
 		is_filtered = False
 		for k, v in i.items():
 			#filter by node key
 			if k != "href":	
 				continue
-
 			#filter by node value
 			for p in url_filter:
 				if v.startswith(p):
@@ -197,7 +202,6 @@ def fetch_urls(url, timeout = 0):
 					break
 			if is_filtered:
 				continue
-
 			#recognize and rewrite relative url to absolute url
 			elif "http" not in v:
 				v = rewrite.url_rewrite(v) 
