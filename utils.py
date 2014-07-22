@@ -3,11 +3,11 @@
 
 import optparse
 import ConfigParser
-import logging
 import urlparse
 import urllib2
 import urllib
 import zlib
+import functools
 
 import gevent
 import gevent.queue
@@ -15,6 +15,7 @@ import pyquery
 import lxml
 
 import rewrite
+import log
 
 def parse_args():
 	"""Read and parse options from command line
@@ -24,22 +25,26 @@ def parse_args():
 	usage = """usage: %prog [options]
 To crawl pages from web in terms of special URL patterns."""
 
-	parser = optparse.OptionParser(usage=usage, version='%prog 1.0.0.0')	
-	parser.add_option('-c', dest='filename',
-						help='read config file', metavar='FILE')
+	parser = optparse.OptionParser(usage = usage, version = '%prog 1.0.0.0')	
+	parser.add_option('-c', dest = 'filename',
+						help = 'read config file', metavar = 'FILE')
 
-	parser.add_option('-l', '--log', dest='log', action = 'store_true',
-						default = False, help='start logging')
+	parser.add_option('-l', '--log', dest = 'log', action = 'store_true',
+						help = 'start logging', default = False)
 
 	options, args = parser.parse_args()
 	if options.filename is None:
 		print parser.format_help()
 		parser.exit()
 	else:
+		confs = parse_config_file(options.filename)
 		if options.log:
-			import logging.config
-			logging.config.fileConfig('logging.conf')
-		return options.filename
+			log.read_config_file(confs['log']['log_config_file'])
+			log.install(confs['log']['log_name'])
+		else:
+			log.uninstall()	
+
+		return options, confs
 
 def parse_config_file(filename): 
 	"""Read configuration file and return as a dict
@@ -49,8 +54,13 @@ def parse_config_file(filename):
 	"""
 	config = ConfigParser.ConfigParser()
 	config.read(filename)
-	confs = config.items('spider',True)
-	return dict(confs)
+	confs = {}
+
+	for s in config.sections():
+		conf = config.items(s,True)
+		confs[s] = dict(conf)
+
+	return confs
 
 def read_file(filename):
 	"""Read content from file and return a generator
@@ -74,6 +84,19 @@ def read_file(filename):
 
 def get_url_response(url, header_dict = {}, post_dict = {},
 	timeout = 0, use_gzip = False):
+	"""
+	get url request response info according to url
+
+	Keyword arguments:
+	url: URL to fetch
+	header_dict: prepare header info for request 
+	post_dict: prepare post data info for request
+	timeout: timeout seconds limit to fetch url 
+	use_gzip: use gzip to compress data for request
+
+	Return values:
+	file like object
+	"""
 
 	url = str(url)
 	#load post data
@@ -109,6 +132,19 @@ def get_url_response(url, header_dict = {}, post_dict = {},
 
 def get_html(url, header_dict = {}, post_dict = {},
 			timeout = 0, use_gzip = False):
+	"""
+	fetch html page according to url
+
+	Keyword arguments:
+	url: URL to fetch
+	header_dict: prepare header info for request 
+	post_dict: prepare post data info for request
+	timeout: timeout seconds limit to fetch url 
+	use_gzip: use gzip to compress data for request
+
+	Return values:
+	html string
+	"""
 
 	response = get_url_response(url, header_dict, post_dict, timeout, use_gzip)
 
@@ -125,8 +161,7 @@ def get_html(url, header_dict = {}, post_dict = {},
 
 	return html
 
-
-def fetch_urls(url):
+def fetch_urls(url, timeout = 0):
 	"""
 	extract urls from the input url html page and return a generator
 	
@@ -136,12 +171,19 @@ def fetch_urls(url):
 	Return values:
 	url generator
 	"""
-	html = get_html(url)
+	try:
+		html = get_html(url, timeout = timeout)
+	except urllib2.URLError as e:
+		log.error("%s:%s" %(url, e))
+		return
+	except urllib2.HTTPError as e:
+		log.error("%s:%s" %(url, e))
+		return
 
 	d = pyquery.PyQuery(html)
 	for i in d.find('a'):
 		m = i.values()
-		url_filter = ['javascript:', '#jump']
+		url_filter = ['javascript:;', '#jump']
 		is_filtered = False
 		for k, v in i.items():
 			#filter by node key
@@ -159,7 +201,7 @@ def fetch_urls(url):
 			#recognize and rewrite relative url to absolute url
 			elif "http" not in v:
 				v = rewrite.url_rewrite(v) 
-				v = "%s/%s" %(i.base_url, v)	
+				v = urlparse.urljoin(url, v)
 			yield v
 
 if __name__ == '__main__':

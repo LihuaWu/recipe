@@ -1,24 +1,38 @@
 #!/usr/bin/python2
-#coding:gbk
+#coding:utf8
 
-import sys
+from functools import wraps
 
-if '.' not in sys.path:
-	sys.path.append('.')
+def log(fn):
+	a = "log"
+	@wraps(fn)
+	def wrapper(*args):
+		args += (a,)
+		fn(*args)
+	return wrapper
 
-import unittest
+@log
+def hello(a, *args):
+	print a
 
-class UtilTest(unittest.TestCase):
-	def test_guess_encoding(self):
-		import util
-		s = '这是我们中国'
-		f, enc, _ = util.guess_encoding(s)
-		self.assertTrue(f, 'True')
-		self.assertTrue(enc, 'gb2312')
-		s = s.decode('gbk').encode('utf-8')
-		f, enc, _ = util.guess_encoding(s)
-		print f, enc
-		pass
+class A:
+	b = "sdf"
+	def test(self):
+		print self.__dict__
+	pass
 
 if __name__ == '__main__':
-	unittest.main()
+
+	a = A()
+	print a.__dict__
+	a.b = 6
+	print a.__dict__
+	a.test()
+	a.b = 7
+	print a.__dict__
+	a.test()
+	if "c" not in a.__dict__:
+		a.__dict__['c'] = 5
+	a.test()
+	print a.c
+	pass
