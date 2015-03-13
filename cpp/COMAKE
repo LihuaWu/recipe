@@ -22,6 +22,10 @@ CFLAGS('-g -std=c++11 -pipe -W -Wall -fPIC')
 CXX('~/.jumbo/opt/gcc49/bin/g++')
 CXXFLAGS('-g -std=c++11 -pipe -W -Wall -fPIC')
 
+CONFIGS('third-64/gtest')
+LDFLAGS('-lpthread')
+
+
 user_sources='tail.cc'
 user_headers=''
 
@@ -33,4 +37,8 @@ Application('tail',Sources(user_sources))
 #SharedLibrary('cpp',Sources(user_sources),HeaderFiles(user_headers))
 #всд©б╪
 #Directory('demo')
+#
 
+graph_sources='graph.cc ./test/testGraph.cc'
+graph_headers='graph.h'
+Application('graph', Sources(graph_sources), HeaderFiles(graph_headers))
