@@ -16,6 +16,7 @@ Graph::Graph(int v) {
 
 Graph::Graph(std::ifstream& is) {
 	int edge;
+	_edge = 0;
 	is >> _vertex >> edge;
 	if (_vertex < 0) {
 		throw std::invalid_argument("numbers of vertices must be greater than zero."); 
@@ -23,15 +24,15 @@ Graph::Graph(std::ifstream& is) {
 	adj.resize(_vertex);
 
 	int v, w;
-	printf("vertices is : %d edge is : %d\n", _vertex, edge);
+//	printf("vertices is : %d edge is : %d\n", _vertex, edge);
 	for (int i = 0; i < edge; ++i) {
 		is >> v >> w;
-		printf("i is : %d v is : %d and w is : %d.\n", i, v, w);
+//		printf("i is : %d v is : %d and w is : %d.\n", i, v, w);
 		AddEdge(v, w);
 	}
 }
 
-void Graph::AddEdge(size_t v, size_t w) {
+void Graph::AddEdge(int v, int w) {
 	isValidVertex(v);
 	isValidVertex(w);
 	++_edge;
@@ -39,7 +40,7 @@ void Graph::AddEdge(size_t v, size_t w) {
 	adj[w].push_back(v);
 }
 
-std::list<int> Graph::Adj(size_t v) {
+std::list<int> Graph::Adj(int v) const {
 	isValidVertex(v);
 	return adj[v];
 }
@@ -47,7 +48,7 @@ std::list<int> Graph::Adj(size_t v) {
 std::string Graph::ToString() {
 	std::ostringstream oss;
 	oss << _vertex << " vertices, " << _edge << " edges\n"; 
-	for (size_t v = 0; v < _vertex; v++) {
+	for (int v = 0; v < _vertex; v++) {
 		oss << v << ": ";
 		for (auto w : adj[v]) {
 			oss << w << " ";

@@ -22,7 +22,7 @@ CFLAGS('-g -std=c++11 -pipe -W -Wall -fPIC')
 CXX('~/.jumbo/opt/gcc49/bin/g++')
 CXXFLAGS('-g -std=c++11 -pipe -W -Wall -fPIC')
 
-CONFIGS('third-64/gtest')
+CONFIGS('third-64/gtest@base')
 LDFLAGS('-lpthread')
 
 
@@ -39,6 +39,6 @@ Application('tail',Sources(user_sources))
 #Directory('demo')
 #
 
-graph_sources='graph.cc ./test/testGraph.cc'
-graph_headers='graph.h'
+graph_sources='graph.cc bfs.cc ./test/testGraph.cc'
+graph_headers='graph.h bfs.h'
 Application('graph', Sources(graph_sources), HeaderFiles(graph_headers))

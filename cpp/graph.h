@@ -16,14 +16,14 @@ public:
 	Graph(std::ifstream& is);
 //	Graph(const Graph& g);
 
-	size_t V() {return _vertex;}
-	size_t E() {return _edge; }
+	int V() const {return _vertex;}
+	int E() const {return _edge; }
 
-	void AddEdge(size_t v, size_t w);
+	void AddEdge(int v, int w);
 
-	std::list<int> Adj(size_t v);
+	std::list<int> Adj(int v) const;
 
-	size_t degree(size_t v) {
+	int degree(int v) {
 		isValidVertex(v);
 		return adj[v].size();
 	}
@@ -31,16 +31,16 @@ public:
 	std::string ToString(); 
 
 private:
-	void isValidVertex(size_t v) {
-		if (v >= _vertex) {
+	void isValidVertex(int v) const {
+		if (v >= _vertex || v < 0) {
 			std::ostringstream oss;
 			oss << "vertex " << v << " is not between 0 and " << _vertex-1;
 			throw std::out_of_range(oss.str());
 		}
 	}
 
-	size_t _vertex; //vertex count
-	size_t _edge; //edge count
+	int _vertex; //vertex count
+	int _edge; //edge count
 	std::vector<std::list<int>> adj; //adjacent list info.
 
 
