@@ -8,25 +8,35 @@
 
 #include "../graph.h"
 #include "../bfs.h"
+#include "../dfs.h"
 
 using namespace graph;
 
-TEST(Graph, demouse) {
+//TEST(Graph, demouse) {
+//	std::string fileName = "./test/graph_data";
+//	std::ifstream ifs(fileName);
+//	Graph g(ifs);
+//	printf("%s\n", g.ToString().c_str());
+//    EXPECT_EQ(1,1);
+//}
+//
+//TEST(Graph, BreadFirstPaths) {
+//	std::string fileName = "./test/graph_data";
+//	std::ifstream ifs(fileName);
+//	Graph g(ifs);
+//
+//	BreadFirstPaths bfs(g, 0);
+//	bool check = bfs.check(g, 0);
+//	EXPECT_EQ(check, true);
+//}
+
+TEST(Graph, DepthFirst) {
 	std::string fileName = "./test/graph_data";
 	std::ifstream ifs(fileName);
 	Graph g(ifs);
 	printf("%s\n", g.ToString().c_str());
-    EXPECT_EQ(1,1);
-}
-
-TEST(Graph, BreadFirstPaths) {
-	std::string fileName = "./test/graph_data";
-	std::ifstream ifs(fileName);
-	Graph g(ifs);
-
-	BreadFirstPaths bfs(g, 0);
-	bool check = bfs.check(g, 0);
-	EXPECT_EQ(check, true);
+	FindCycle df(g);
+	df.dfs(g, 0);
 }
 
 int main(int argc, char** argv) {

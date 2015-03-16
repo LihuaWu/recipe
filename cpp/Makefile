@@ -34,7 +34,7 @@ CCP_FLAGS=
 
 
 #COMAKE UUID
-COMAKE_MD5=57c7325dc00617376b6c9cda22ae1636  COMAKE
+COMAKE_MD5=765bb3c0550242c648f2d25cb2043259  COMAKE
 
 
 .PHONY:all
@@ -65,6 +65,7 @@ clean:ccpclean
 	rm -rf tail_tail.o
 	rm -rf graph_graph.o
 	rm -rf graph_bfs.o
+	rm -rf graph_dfs.o
 	rm -rf test/graph_testGraph.o
 
 .PHONY:dist
@@ -93,10 +94,12 @@ tail:tail_tail.o
 
 graph:graph_graph.o \
   graph_bfs.o \
+  graph_dfs.o \
   test/graph_testGraph.o
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mgraph[0m']"
 	$(CXX) graph_graph.o \
   graph_bfs.o \
+  graph_dfs.o \
   test/graph_testGraph.o -Xlinker "-("  ../../third-64/gtest/lib/libgtest.a \
   ../../third-64/gtest/lib/libgtest_main.a -lpthread -Xlinker "-)" -o graph
 	mkdir -p ./output/bin
@@ -112,12 +115,21 @@ graph_graph.o:graph.cc \
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o graph_graph.o graph.cc
 
 graph_bfs.o:bfs.cc \
+  graph.h \
   bfs.h
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mgraph_bfs.o[0m']"
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o graph_bfs.o bfs.cc
 
+graph_dfs.o:dfs.cc \
+  graph.h \
+  dfs.h
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mgraph_dfs.o[0m']"
+	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o graph_dfs.o dfs.cc
+
 test/graph_testGraph.o:test/testGraph.cc \
-  graph.h
+  graph.h \
+  bfs.h \
+  dfs.h
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtest/graph_testGraph.o[0m']"
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o test/graph_testGraph.o test/testGraph.cc
 
