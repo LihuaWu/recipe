@@ -12,8 +12,8 @@ namespace graph {
 
 class Graph {
 public:
-	Graph(int v); 
-	Graph(std::ifstream& is);
+	Graph(int v, bool directed); 
+	Graph(std::ifstream& is, bool directed);
 //	Graph(const Graph& g);
 
 	int V() const {return _vertex;}
@@ -39,6 +39,7 @@ private:
 		}
 	}
 
+	bool _directed; //directed or undirected.
 	int _vertex; //vertex count
 	int _edge; //edge count
 	std::vector<std::list<int>> adj; //adjacent list info.

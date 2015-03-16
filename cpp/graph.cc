@@ -5,16 +5,19 @@
 
 namespace graph {
 
-Graph::Graph(int v) {
+Graph::Graph(int v, bool directed) {
 	if (v < 0) {
 		throw std::invalid_argument("numbers of vertices must be greater than zero."); 
 	}
 	_vertex = v;
+	_directed = directed;
 	_edge = 0;
 	adj.resize(v);
+
 }
 
-Graph::Graph(std::ifstream& is) {
+Graph::Graph(std::ifstream& is, bool directed) {
+	_directed = directed;
 	int edge;
 	_edge = 0;
 	is >> _vertex >> edge;
@@ -37,7 +40,9 @@ void Graph::AddEdge(int v, int w) {
 	isValidVertex(w);
 	++_edge;
 	adj[v].push_back(w);
-	adj[w].push_back(v);
+	if (!_directed) {
+		adj[w].push_back(v);
+	}
 }
 
 std::list<int> Graph::Adj(int v) const {
