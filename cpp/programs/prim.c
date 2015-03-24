@@ -78,6 +78,7 @@ prim(graph *g, int start)
 			if ((intree[i] == FALSE) && (dist > distance[i])) {
 				dist = distance[i];
 				v = i;
+
 			}
 	}
 }

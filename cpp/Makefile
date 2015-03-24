@@ -34,11 +34,11 @@ CCP_FLAGS=
 
 
 #COMAKE UUID
-COMAKE_MD5=765bb3c0550242c648f2d25cb2043259  COMAKE
+COMAKE_MD5=5871893afc04e490bba7337c39606b26  COMAKE
 
 
 .PHONY:all
-all:comake2_makefile_check tail graph 
+all:comake2_makefile_check tail graph top 
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mall[0m']"
 	@echo "make all done"
 
@@ -62,11 +62,15 @@ clean:ccpclean
 	rm -rf ./output/bin/tail
 	rm -rf graph
 	rm -rf ./output/bin/graph
+	rm -rf top
+	rm -rf ./output/bin/top
 	rm -rf tail_tail.o
 	rm -rf graph_graph.o
 	rm -rf graph_bfs.o
 	rm -rf graph_dfs.o
 	rm -rf test/graph_testGraph.o
+	rm -rf top_topsort.o
+	rm -rf test/top_testTopSort.o
 
 .PHONY:dist
 dist:
@@ -105,6 +109,15 @@ graph:graph_graph.o \
 	mkdir -p ./output/bin
 	cp -f --link graph ./output/bin
 
+top:top_topsort.o \
+  test/top_testTopSort.o
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtop[0m']"
+	$(CXX) top_topsort.o \
+  test/top_testTopSort.o -Xlinker "-("  ../../third-64/gtest/lib/libgtest.a \
+  ../../third-64/gtest/lib/libgtest_main.a -lpthread -Xlinker "-)" -o top
+	mkdir -p ./output/bin
+	cp -f --link top ./output/bin
+
 tail_tail.o:tail.cc
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtail_tail.o[0m']"
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o tail_tail.o tail.cc
@@ -132,6 +145,16 @@ test/graph_testGraph.o:test/testGraph.cc \
   dfs.h
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtest/graph_testGraph.o[0m']"
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o test/graph_testGraph.o test/testGraph.cc
+
+top_topsort.o:topsort.cc \
+  wgraph.h
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtop_topsort.o[0m']"
+	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o top_topsort.o topsort.cc
+
+test/top_testTopSort.o:test/testTopSort.cc \
+  wgraph.h
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtest/top_testTopSort.o[0m']"
+	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o test/top_testTopSort.o test/testTopSort.cc
 
 endif #ifeq ($(shell uname -m),x86_64)
 
