@@ -34,11 +34,11 @@ CCP_FLAGS=
 
 
 #COMAKE UUID
-COMAKE_MD5=c7cd4999e9570dd10e07a8360a03356e  COMAKE
+COMAKE_MD5=b291467e7b279778bac1718db3ead974  COMAKE
 
 
 .PHONY:all
-all:comake2_makefile_check tail graph top dijkstra tree1 
+all:comake2_makefile_check tail graph top dijkstra tree1 ac 
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mall[0m']"
 	@echo "make all done"
 
@@ -68,6 +68,8 @@ clean:ccpclean
 	rm -rf ./output/bin/dijkstra
 	rm -rf tree1
 	rm -rf ./output/bin/tree1
+	rm -rf ac
+	rm -rf ./output/bin/ac
 	rm -rf tail_tail.o
 	rm -rf graph_graph.o
 	rm -rf graph_bfs.o
@@ -78,6 +80,7 @@ clean:ccpclean
 	rm -rf dijkstra_dijkstra.o
 	rm -rf test/dijkstra_testDijkstra.o
 	rm -rf tree1_tree.o
+	rm -rf ac_ac.o
 
 .PHONY:dist
 dist:
@@ -141,6 +144,13 @@ tree1:tree1_tree.o
 	mkdir -p ./output/bin
 	cp -f --link tree1 ./output/bin
 
+ac:ac_ac.o
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mac[0m']"
+	$(CXX) ac_ac.o -Xlinker "-("  ../../third-64/gtest/lib/libgtest.a \
+  ../../third-64/gtest/lib/libgtest_main.a -lpthread -Xlinker "-)" -o ac
+	mkdir -p ./output/bin
+	cp -f --link ac ./output/bin
+
 tail_tail.o:tail.cc
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtail_tail.o[0m']"
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o tail_tail.o tail.cc
@@ -195,6 +205,10 @@ test/dijkstra_testDijkstra.o:test/testDijkstra.cc \
 tree1_tree.o:tree.cc
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtree1_tree.o[0m']"
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o tree1_tree.o tree.cc
+
+ac_ac.o:ac.cc
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mac_ac.o[0m']"
+	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o ac_ac.o ac.cc
 
 endif #ifeq ($(shell uname -m),x86_64)
 

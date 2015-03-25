@@ -53,3 +53,6 @@ Application('dijkstra', Sources(dijkstra_sources), HeaderFiles(dijkstra_headers)
 
 tree_sources='tree.cc'
 Application('tree1', Sources(tree_sources), HeaderFiles(''))
+
+ac_sources='ac.cc'
+Application('ac', Sources(ac_sources), HeaderFiles(''))
