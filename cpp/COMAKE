@@ -46,3 +46,10 @@ Application('graph', Sources(graph_sources), HeaderFiles(graph_headers))
 wgraph_sources='topsort.cc ./test/testTopSort.cc'
 wgraph_headers='topsort.h wgraph.h'
 Application('top', Sources(wgraph_sources), HeaderFiles(wgraph_headers))
+
+dijkstra_sources='dijkstra.cc ./test/testDijkstra.cc'
+dijkstra_headers='dijkstra.h wgraph.h'
+Application('dijkstra', Sources(dijkstra_sources), HeaderFiles(dijkstra_headers))
+
+tree_sources='tree.cc'
+Application('tree1', Sources(tree_sources), HeaderFiles(''))

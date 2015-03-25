@@ -16,7 +16,7 @@ public:
 		int v, w;
 		float weight;
 		for (int i = 0; i < _edgeNumber; ++i) {
-			is >> v >> w;
+			is >> v >> w >> weight;
 			addEdge(v, w, weight);
 		}
 	}
@@ -24,7 +24,7 @@ public:
 	int V() const { return _vertexNumber; }
 	int E() const { return _edgeNumber; }
 
-	std::list<int> edges(int v) const {
+	std::list<std::pair<int, double>> edges(int v) const {
 		return _edges[v];
 	}
 
@@ -34,7 +34,7 @@ public:
 		for (int v = 0; v < _vertexNumber; v++) {
 			oss << v << ": ";
 			for (auto w : _edges[v]) {
-				oss << w.first << " ";
+				oss << w.first << "-" << w.second << " ";
 			}
 			oss<<std::endl;
 		}
@@ -48,7 +48,7 @@ public:
 private:
 	int _edgeNumber;
 	int _vertexNumber;
-	std::vector<std::list<int, double>> _edges; //a->b with weight
+	std::vector<std::list<std::pair<int, double>>> _edges; //a->b with weight
 }; //class Graph
 
 } //namespace graph

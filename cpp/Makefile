@@ -34,11 +34,11 @@ CCP_FLAGS=
 
 
 #COMAKE UUID
-COMAKE_MD5=5871893afc04e490bba7337c39606b26  COMAKE
+COMAKE_MD5=c7cd4999e9570dd10e07a8360a03356e  COMAKE
 
 
 .PHONY:all
-all:comake2_makefile_check tail graph top 
+all:comake2_makefile_check tail graph top dijkstra tree1 
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mall[0m']"
 	@echo "make all done"
 
@@ -64,6 +64,10 @@ clean:ccpclean
 	rm -rf ./output/bin/graph
 	rm -rf top
 	rm -rf ./output/bin/top
+	rm -rf dijkstra
+	rm -rf ./output/bin/dijkstra
+	rm -rf tree1
+	rm -rf ./output/bin/tree1
 	rm -rf tail_tail.o
 	rm -rf graph_graph.o
 	rm -rf graph_bfs.o
@@ -71,6 +75,9 @@ clean:ccpclean
 	rm -rf test/graph_testGraph.o
 	rm -rf top_topsort.o
 	rm -rf test/top_testTopSort.o
+	rm -rf dijkstra_dijkstra.o
+	rm -rf test/dijkstra_testDijkstra.o
+	rm -rf tree1_tree.o
 
 .PHONY:dist
 dist:
@@ -118,6 +125,22 @@ top:top_topsort.o \
 	mkdir -p ./output/bin
 	cp -f --link top ./output/bin
 
+dijkstra:dijkstra_dijkstra.o \
+  test/dijkstra_testDijkstra.o
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mdijkstra[0m']"
+	$(CXX) dijkstra_dijkstra.o \
+  test/dijkstra_testDijkstra.o -Xlinker "-("  ../../third-64/gtest/lib/libgtest.a \
+  ../../third-64/gtest/lib/libgtest_main.a -lpthread -Xlinker "-)" -o dijkstra
+	mkdir -p ./output/bin
+	cp -f --link dijkstra ./output/bin
+
+tree1:tree1_tree.o
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtree1[0m']"
+	$(CXX) tree1_tree.o -Xlinker "-("  ../../third-64/gtest/lib/libgtest.a \
+  ../../third-64/gtest/lib/libgtest_main.a -lpthread -Xlinker "-)" -o tree1
+	mkdir -p ./output/bin
+	cp -f --link tree1 ./output/bin
+
 tail_tail.o:tail.cc
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtail_tail.o[0m']"
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o tail_tail.o tail.cc
@@ -152,9 +175,26 @@ top_topsort.o:topsort.cc \
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o top_topsort.o topsort.cc
 
 test/top_testTopSort.o:test/testTopSort.cc \
-  wgraph.h
+  wgraph.h \
+  topsort.h
 	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtest/top_testTopSort.o[0m']"
 	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o test/top_testTopSort.o test/testTopSort.cc
+
+dijkstra_dijkstra.o:dijkstra.cc \
+  dijkstra.h \
+  wgraph.h
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mdijkstra_dijkstra.o[0m']"
+	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o dijkstra_dijkstra.o dijkstra.cc
+
+test/dijkstra_testDijkstra.o:test/testDijkstra.cc \
+  wgraph.h \
+  dijkstra.h
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtest/dijkstra_testDijkstra.o[0m']"
+	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o test/dijkstra_testDijkstra.o test/testDijkstra.cc
+
+tree1_tree.o:tree.cc
+	@echo "[[1;32;40mCOMAKE:BUILD[0m][Target:'[1;32;40mtree1_tree.o[0m']"
+	$(CXX) -c $(INCPATH) $(DEP_INCPATH) $(CPPFLAGS) $(CXXFLAGS)  -o tree1_tree.o tree.cc
 
 endif #ifeq ($(shell uname -m),x86_64)
 
