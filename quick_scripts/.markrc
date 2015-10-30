@@ -1,0 +1,25 @@
+#!/bin/bash
+#author:will
+
+export MARKPATH=/home/wulihua/.marks
+function j {
+	echo $1
+	cd  -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+}
+
+function m {
+	mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
+}
+
+function um {
+	rm -i "$MARKPATH/$1"
+}
+
+function ms {
+	ls -l $MARKPATH | sed 's/ \{2,\}/ /g' | cut -d " " -f9 | sed '/^$/d'
+}
+
+function ppwd(){
+	echo $USER@$(hostname -i)":"$(pwd)
+}
+
