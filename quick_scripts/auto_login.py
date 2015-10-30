@@ -12,43 +12,67 @@ import traceback
 import pexpect
 
 SERVER = {
-        "master":["22","root","192.168.188.130","budong"],
-        "slave":["22","root","192.168.188.131","budong"],
-        "will":["22","root","10.11.207.94","will"],
-         }
+		"master":["22","root","192.168.188.130","budong"],
+		"slave":["22","root","192.168.188.131","budong"],
+		"will":["22","root","10.11.207.94","will"],
+		 }
+SERVER = {}
 
-def auto_connect():
-    """SSH自动登录脚本"""
-    if len(sys.argv) == 2:
-        remote_server = sys.argv[1]
-    else:
-        print "使用方法：\n./pexpect_ssh.py 主机别名"
-        sys.exit(1)
+FILENAME= os.environ.get('AUTOSSHFIS')
 
-    if remote_server in SERVER:
-        SSH = "ssh -p %s %s@%s " % (SERVER[remote_server][0],SERVER[remote_server][1],SERVER[remote_server][2])
-    else:
-        print "您输入了一个错误的主机别名"
-        sys.exit(1)
+def load():
+	items = [i.strip() for i in open(FILENAME)]
+	for item in items:
+		item = item.split(",")
+		key, value = item[0], item[1:]
+		SERVER[key] = value
+		
+def add(alias, sshItem, passwd):
+	user, ip = sshItem.strip().split("@")
+	port = '22'
+	item = [alias,port,user,ip,passwd]
 
-    try:
-        child = pexpect.spawn(SSH)
-        index = child.expect(['password:','continue connecting (yes/no)?',pexpect.EOF, pexpect.TIMEOUT])
-        if index == 0:
-            child.sendline(SERVER[remote_server][3])
-            child.interact()
-        elif index == 1:
-            child.sendline('yes')
-            child.expect(['password:'])
-            child.sendline(SERVER[remote_server][3])
-            child.interact()
-        elif index == 2:
-            print "子程序异常，退出!"
-            child.close()
-        elif index == 3:
-            print "连接超时"
-    except:
-        traceback.print_exec()
+	with open(FILENAME, 'a+') as f:
+		print >> f, ",".join(item)
+	print "add %s to login %s" %(alias, ip)
+
+def auto_connect(hostAlias):
+	"""SSH自动登录脚本"""
+	if len(sys.argv) == 2:
+		remote_server = sys.argv[1]
+	else:
+		remote_server = hostAlias
+		#print "使用方法：\n./pexpect_ssh.py 主机别名"
+		#sys.exit(1)
+
+
+	if remote_server in SERVER:
+		SSH = "ssh -p %s %s@%s " % (SERVER[remote_server][0],SERVER[remote_server][1],SERVER[remote_server][2])
+	else:
+		print "您输入了一个错误的主机别名"
+		sys.exit(1)
+
+	print 'jump to %s' %SERVER[remote_server][2],
+	try:
+		child = pexpect.spawn(SSH)
+		index = child.expect(['password:','continue connecting (yes/no)?',pexpect.EOF, pexpect.TIMEOUT])
+		if index == 0:
+			child.sendline(SERVER[remote_server][3])
+			child.interact()
+		elif index == 1:
+			child.sendline('yes')
+			child.expect(['password:'])
+			child.sendline(SERVER[remote_server][3])
+			child.interact()
+		elif index == 2:
+			print "子程序异常，退出!"
+			child.close()
+		elif index == 3:
+			print "连接超时"
+	except:
+		traceback.print_exec()
+
+load()
 
 if __name__ == '__main__':
-    auto_connect()
+	auto_connect()

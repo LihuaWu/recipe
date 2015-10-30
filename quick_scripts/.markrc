@@ -1,7 +1,10 @@
 #!/bin/bash
 #author:will
 
-export MARKPATH=/home/wulihua/.marks
+export MARKPATH=/home/will/.script/.marks
+mkdir -p $MARKPATH
+export AUTOSSHFIS=/home/will/.script/.passwd
+
 function j {
 	echo $1
 	cd  -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
@@ -21,5 +24,20 @@ function ms {
 
 function ppwd(){
 	echo $USER@$(hostname -i)":"$(pwd)
+}
+
+function to() {
+	cd /home/will/.script && env python -c "import auto_login as al; al.auto_connect('$1');"
+	cd -
+}
+
+function add() {
+	touch $AUTOSSHFIS
+	hostAlias=$1
+	sshItem=$2
+	passwd=$3
+	cd /home/will/.script && env python -c "import auto_login as al; al.add('$1', '$2', '$3');"
+
+
 }
 
