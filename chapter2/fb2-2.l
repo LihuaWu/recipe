@@ -40,7 +40,7 @@ main(int argc, char** argv) {
         totwords += words; words = 0;
         totlines += lines; lines = 0;
     }
-    if (argc > 1) {
+    if (argc > 2) {
         printf("%8d%8d%8d total\n", totlines, totwords, totchars);
     }
     return 0;
