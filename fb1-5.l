@@ -9,8 +9,12 @@
 "*" { return MUL; }
 "/" { return DIV; }
 "|" { return ABS; }
+"(" { return OP; }
+")" { return CP; }
+[\+\-]?[0-9]+ { yylval = atoi(yytext); return NUMBER; }
+
 \n  { return EOL; }
-[0-9]+ { yylval = atoi(yytext); return NUMBER; }
 [ \t] { /* ignore whitespace */ } 
+"//".*  /* ignore comments */
 .   { printf("Mystery character %s\n", yytext); }
 %%
