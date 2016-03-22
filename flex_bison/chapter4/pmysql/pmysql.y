@@ -358,14 +358,14 @@ expr : FCOUNT '(' '*' ')' { emit("COUNTALL"); }
     | FCOUNT '(' expr ')' { emit(" CALL 1 COUNT"); }
 ;
 
-expr: FSUBSTRI
+expr: FSUBSTRING '(' val_list ')' { emit("CALL %d SUBSTR", $3); }
+    | FSUBSTRING '(' expr FROM expr ')' { emit("CALL 2 SUBSTR"); }
+    | FSUBSTRING '(' expr FROM expr FOR expr ')' { emit("CALL 3 SUBSTR"); }
+    | FTRIM '(' val_list ')'    { emit("CALL %d TRIM", $3); }
+    | FTRIM '(' trim_ltb expr FROM val_list ')' { emit("CALL 3 TRIM"); }
+;
 
-
-
-
-
-
-
-
-
-
+trim_ltb: LEADING   { emit("NUMBER 1"); }
+    | TRAILING  { emit("NUBMER 2"); }
+    | BOTH  { emit("NUMBER 3"); }
+;
