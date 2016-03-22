@@ -356,7 +356,7 @@ column_list: NAME { emit("COLUMN %s", $1); free($1); $$ = 1; }
   ;
 
 select_opts:                          { $$ = 0; }
-| select_opts ALL                 { if($$ & 01) yyerror("duplicate ALL option"); $$ = $1 | 01; }
+| select_opts ALL                 { if($$ & 01) yyerror("duplicate ALL option"); $$ = $1 | 01; } /* to prevent duplicates in the grammar. */
 | select_opts DISTINCT            { if($$ & 02) yyerror("duplicate DISTINCT option"); $$ = $1 | 02; }
 | select_opts DISTINCTROW         { if($$ & 04) yyerror("duplicate DISTINCTROW option"); $$ = $1 | 04; }
 | select_opts HIGH_PRIORITY       { if($$ & 010) yyerror("duplicate HIGH_PRIORITY option"); $$ = $1 | 010; }
@@ -882,9 +882,9 @@ expr: expr REGEXP expr { emit("REGEXP"); }
    | expr NOT REGEXP expr { emit("REGEXP"); emit("NOT"); }
    ;
 
-expr: CURRENT_TIMESTAMP { emit("NOW") };
-   | CURRENT_DATE	{ emit("NOW") };
-   | CURRENT_TIME	{ emit("NOW") };
+expr: CURRENT_TIMESTAMP { emit("NOW"); }
+   | CURRENT_DATE	{ emit("NOW"); }
+   | CURRENT_TIME	{ emit("NOW"); }
    ;
 
 expr: BINARY expr %prec UMINUS { emit("STRTOBIN"); }
